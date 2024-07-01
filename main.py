@@ -7,26 +7,15 @@ import generateResultFile
 
 if __name__ == "__main__":
 
-    #inputfile = "test/przykładProgram.cpp"
-    #processFile.processFile(inputfile)
-
-
-    #inputfile = "test/example2.cpp"
-    #processFile.processFile(inputfile)
-
-
-    #inputfile = "test/example3.cpp"
-    #processFile.processFile(inputfile)
+    #plik źródłowy
+    #inputfile = "test/exampleACC.cpp"
     
-
-    #inputfile = "test/example4.cpp"
-    #processFile.processFile(inputfile) '''
-
+    inputfile = "test/exampleACCparallel.cpp"
+    
     #plik wyjścowy
-    inputfile = "test/majaProgram.cpp"
     outputfile = inputfile + str(".translated.cpp")
 
-    # Sprawdzenie istnienia pliku
+    # sprawdza , czy plik z tak ą nazw ą istnieje
     if os.path.exists(inputfile):
         if os.path.isfile(inputfile):
             if not os.access(inputfile, os.R_OK):
@@ -39,14 +28,13 @@ if __name__ == "__main__":
         print("Error! Path {inputfile} does not exist.")
         sys.exit(-1)
 
-    # metoda analizuje plik C++,w ACCconstructs przechowywamy wszystkie znalezione dyrektywy
+    #funkcja analizy kodu
     lines, ACCconstructs = parserACC.parseFile(inputfile)
 
-    # funkcja tłumaczy dyrektywy openACC na openMP i przechowuje w ACCconstructs
+    # funkcja tłumaczenia dyrektywy
     convertOpenACCtoOpenMP.convertACCtoOMP(lines, ACCconstructs)
 
-    # generujemy nowy plik z przetłumaczonymi dyryktywami
-
+    # funkcja generowania pliku wyj ś ciowego
     generateResultFile.generateTranslatedFile(lines, ACCconstructs, outputfile)
 
     print(f"File {inputfile} translated. Name fale is {outputfile}")

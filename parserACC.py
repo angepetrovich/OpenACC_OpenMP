@@ -91,18 +91,14 @@ def parseFile(inputfile):
         #usuwa dowolny biały znak przed nawiasem otwierającym
         original = re.sub('\\s\\(', '(', original)
 
-        print('original: ' , original)
-        #proces blokowania komentarzy, jezeli są
+        #proces usuwania komentarzy, jezeli są
         statements, isCommentLeftOpen = blockComments(original, isCommentLeftOpen)
 
-        #sprawdzanie pojedynczych komentarzy, jezeli są to pracyjemy z do tego indeksu
+        #sprawdzanie pojedynczych komentarzy
         if '//' in statements:
             statements = statements[:statements.find("//")]
-
-        print('statements: ', statements)
-
-      
-        # check OpenACC directives
+    
+        # znajdywanie dyrekyw OpenACC
         if '#' in statements:
             tmp = statements[statements.find("#")+len("#"):].strip()
             if 'pragma' in tmp:
@@ -113,7 +109,5 @@ def parseFile(inputfile):
 
         curline = curline+1
 
-    for key, value in ACCconstructs.items():
-        print(f'Klucz: {key}, Wartość: {value.construct}\n')
     return lines, ACCconstructs
 

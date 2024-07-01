@@ -4,14 +4,19 @@
 using namespace std;
 
 #define SIZE 15000
+#define N (SIZE*SIZE)
 
 void matrixAddition(const double A[], const double B[], double C[]) {
-#pragma omp parallel
-    for (int x = 0; x < SIZE; x++) {
-        for (int y = 0; y < SIZE; y++) {
-            C[x*SIZE + y] = A[x*SIZE + y] + B[x*SIZE + y];
-        }
-    }
+#pragma omp target data map(tofrom:A[0:N],B[0:N],C[0:N])
+	{
+#pragma omp target teams distribute
+		for (int x = 0; x < SIZE; x++) {
+#pragma omp parallel for
+			for (int y = 0; y < SIZE; y++) {
+				C[x*SIZE + y] = A[x*SIZE + y] + B[x*SIZE + y];
+			}
+		}
+	}
 }
 
 int main() {
@@ -21,11 +26,11 @@ int main() {
     double* C = (double*)malloc(SIZE*SIZE* sizeof(double));
     clock_t begin, end;
 
-    for(int x = 0; x <SIZE; x++){
+   for(int x = 0; x <SIZE; x++){
        for(int y = 0; y <SIZE; y++){
-                        A[x*SIZE + y] = rand();
-                        B[x*SIZE + y] = rand();
-           }
+            A[x*SIZE + y] = rand();
+            B[x*SIZE + y] = rand();
+        }
     }
 
     begin = clock();

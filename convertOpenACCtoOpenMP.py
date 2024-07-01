@@ -18,7 +18,6 @@ def convertACCtoOMP(lines, constructs):
         if construct.construct.startswith("parallel"):
             translateACCtoOMP_parallel(lines, construct)
         elif construct.construct.startswith("kernels"):
-            #translateACCtoOMP_kernels(lines, construct)
             translateACCtoOMP_parallel(lines, construct)
         elif construct.construct.startswith("loop"):
             translateACCtoOMP_loop(lines, construct)
@@ -26,59 +25,7 @@ def convertACCtoOMP(lines, constructs):
             translateACCtoOMP_data(lines, construct)
 
 
-# acc kernels -> omp parallel
-#acc kernels loop -> omp parallel for
-def translateACCtoOMP_kernels(lines, construct):
-    omp_construct = ["parrallel"]
-    omp_clauses = []
 
-    # jezeli w konstrukcji jest loop
-    if 'loop' in construct.construct:
-        construct.hasLoop = True
-        # translate loop
-        translateACCtoOMP_loop(lines, construct)
-    else:
-        #clauses
-        #firstprivate
-        if "firstprivate" in construct.construct:
-            var = getVariablesForClause(construct.construct, "firstprivate")
-            if len(var) > 0:
-                omp_clauses.append(f"firstprivate({var})")
-
-        # private
-        if "private" in construct.construct:
-            var = getVariablesForClause(construct.construct, "private")
-            if len(var) > 0:
-                omp_clauses.append(f"private({var})")
-
-        # reduction
-        if 'reduction' in construct.construct:
-            var = getVariablesForClause(construct.construct, "reduction")
-            if len(var) > 0:
-                omp_clauses.append(f"reduction({var})")
-
-        # collapse
-        if 'collapse' in construct.construct:
-            collapse_var = getVariablesForClause(construct.construct, "collapse")
-            if len(collapse_var) >= 1:
-                omp_clauses.append(f"collapse({collapse_var})")
-
-        # if(x)
-        if "if" in construct.construct:
-            var = getVariablesForClause(construct.construct, "if")
-            if len(var) > 0:
-                omp_clauses.append(f"if({var})")
-
-    # zachowujemy tłumaczenie
-    construct.openmp = [" ".join(omp_construct + (construct.openmp if construct.hasLoop else []) + omp_clauses)]
-
-
-# acc loop -> omp for
-#acc loop gang -> omp distribute
-#acc loop vector -> parallel simd
-#acc loop seq -> pusta linia
-#acc loop worker -> parallel for
-#acc loop gang worker vector -> distribute parallel for simd
 def translateACCtoOMP_loop(lines, construct):
     construct.hasLoop = True
     omp_construct = []
@@ -134,9 +81,7 @@ def translateACCtoOMP_loop(lines, construct):
     else:
         construct.openmp = [" ".join(omp_construct + omp_clauses)]
 
-#acc parallel -> omp parallel, jezeli konstrukcja nie posiada loop oraz klauzul
-# lub "loop" tlumaczy sie tylko na "for"
-#acc parallel -> target teams, jezeli jest "loop" nie tumaczy sie tylko na "for"
+
 def translateACCtoOMP_parallel(lines, construct):
     omp_construct = []
     omp_clauses = []
@@ -203,7 +148,7 @@ def translateACCtoOMP_parallel(lines, construct):
 
     construct.openmp = [" ".join(omp_construct + (construct.openmp if construct.hasLoop else []) + omp_clauses)]
 
-#acc data -> omp target data
+
 def translateACCtoOMP_data(lines, construct):
     omp_construct = ["target data"]
     omp_clauses = []
@@ -256,26 +201,6 @@ def translateACCtoOMP_data(lines, construct):
 
     construct.openmp = [" ".join(omp_construct + (construct.openmp if construct.hasLoop else []) + omp_clauses)]
 
-'''
-# szukamy zakonczenia bloku {}
-def findClosingBrackets(line, pos_block, lines):
-    result = -1
-    noOpenBrackets = 1
-    s = lines[line][pos_block + 1:]
-    while noOpenBrackets > 0:
-        for i in range(0, len(s)):
-            if s[i] == '{':
-                noOpenBrackets = noOpenBrackets + 1
-            elif s[i] == '}':
-                noOpenBrackets = noOpenBrackets - 1
-                if noOpenBrackets == 0:
-                    result = line
-                    break
-
-        if noOpenBrackets > 0:
-            line = line + 1
-            s = lines[line]
-    return result '''
 
 
 # przepisujemy wartosci w nawiasach ()
