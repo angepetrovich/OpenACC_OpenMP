@@ -101,11 +101,7 @@ def parseFile(inputfile):
 
         print('statements: ', statements)
 
-        #nagłówek <openacc.h>
-        if re.match('#\s*include\s*<openacc.h>.*', statements):
-            ACCconstructs[eline] = convertOpenACCtoOpenMP.AccConstruct(original, '#include <openacc.h>', bline + 1, eline + 1)
-        #    print(bline + 1, eline + 1, construct)
-
+      
         # check OpenACC directives
         if '#' in statements:
             tmp = statements[statements.find("#")+len("#"):].strip()

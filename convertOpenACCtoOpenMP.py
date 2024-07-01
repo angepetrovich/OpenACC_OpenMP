@@ -14,9 +14,6 @@ class AccConstruct:
 def convertACCtoOMP(lines, constructs):
     for line, construct in constructs.items():
 
-        # include acc
-        #if construct.construct == '#include <openacc.h>':
-         #   translate_include_acc(construct)
         # dyrektywy acc
         if construct.construct.startswith("parallel"):
             translateACCtoOMP_parallel(lines, construct)
@@ -27,12 +24,6 @@ def convertACCtoOMP(lines, constructs):
             translateACCtoOMP_loop(lines, construct)
         elif construct.construct.startswith("data"):
             translateACCtoOMP_data(lines, construct)
-
-# include <openacc.h> -> include <omp.h>
-def translate_include_acc(construct):
-    if construct.construct == '#include <openacc.h>':
-        construct.openmp = ['#include <omp.h>']
-    construct.needsOMPprefix = False
 
 
 # acc kernels -> omp parallel
