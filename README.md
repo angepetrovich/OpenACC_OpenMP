@@ -1,3 +1,7 @@
+Projekt tłumaczy pewne dyrektywy OpenACC na OpenMP w kodzie C++.
+
+
+
 # OpenACCOpenMPTranslate kompilacja
 
 W projekcie znajduje się plik Makefile, który zawiera kompilację projektu.
