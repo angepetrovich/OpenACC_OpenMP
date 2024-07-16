@@ -1,4 +1,4 @@
-Projekt tłumaczy pewne dyrektywy OpenACC na OpenMP w kodzie C++.
+# Projekt tłumaczy pewne dyrektywy OpenACC na OpenMP w kodzie C++.
 
 
 
